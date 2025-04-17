@@ -94,6 +94,113 @@ export type Database = {
         }
         Relationships: []
       }
+      inverter_parameters: {
+        Row: {
+          acc_peak_peak: number | null
+          acc_rms: number | null
+          acv_peak_peak: number | null
+          acv_rms: number | null
+          apparent_power: number | null
+          battery_percentage: number | null
+          battery_voltage: number | null
+          energy_kwh: number | null
+          frequency: number | null
+          id: string
+          inverter_id: string
+          mains_present: boolean | null
+          output_capacity: number | null
+          output_power: number | null
+          output_voltage: number | null
+          power_factor: number | null
+          reactive_power: number | null
+          real_power: number | null
+          solar_present: boolean | null
+          timestamp: string
+        }
+        Insert: {
+          acc_peak_peak?: number | null
+          acc_rms?: number | null
+          acv_peak_peak?: number | null
+          acv_rms?: number | null
+          apparent_power?: number | null
+          battery_percentage?: number | null
+          battery_voltage?: number | null
+          energy_kwh?: number | null
+          frequency?: number | null
+          id?: string
+          inverter_id: string
+          mains_present?: boolean | null
+          output_capacity?: number | null
+          output_power?: number | null
+          output_voltage?: number | null
+          power_factor?: number | null
+          reactive_power?: number | null
+          real_power?: number | null
+          solar_present?: boolean | null
+          timestamp?: string
+        }
+        Update: {
+          acc_peak_peak?: number | null
+          acc_rms?: number | null
+          acv_peak_peak?: number | null
+          acv_rms?: number | null
+          apparent_power?: number | null
+          battery_percentage?: number | null
+          battery_voltage?: number | null
+          energy_kwh?: number | null
+          frequency?: number | null
+          id?: string
+          inverter_id?: string
+          mains_present?: boolean | null
+          output_capacity?: number | null
+          output_power?: number | null
+          output_voltage?: number | null
+          power_factor?: number | null
+          reactive_power?: number | null
+          real_power?: number | null
+          solar_present?: boolean | null
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inverter_parameters_inverter_id_fkey"
+            columns: ["inverter_id"]
+            isOneToOne: false
+            referencedRelation: "inverter_systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inverter_systems: {
+        Row: {
+          created_at: string
+          id: string
+          location: string | null
+          model: string | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location?: string | null
+          model?: string | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location?: string | null
+          model?: string | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       matches: {
         Row: {
           black_player_id: string | null
