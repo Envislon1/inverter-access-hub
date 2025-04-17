@@ -11,24 +11,33 @@ const Dashboard = () => {
   const [systems, setSystems] = useState<any[]>([]);
   const [selectedSystem, setSelectedSystem] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/");
+      } else {
+        setUserId(session.user.id);
       }
     };
     
     checkUser();
-    fetchInverterSystems();
   }, [navigate]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchInverterSystems();
+    }
+  }, [userId]);
 
   const fetchInverterSystems = async () => {
     try {
       const { data, error } = await supabase
         .from('inverter_systems')
-        .select('*');
+        .select('*')
+        .eq('user_id', userId);
       
       if (error) throw error;
       setSystems(data || []);
@@ -60,18 +69,32 @@ const Dashboard = () => {
     acc_peak_peak: 15
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-orange-500">Welcome to Technautic</h1>
-          <Button 
-            variant="outline" 
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="text-orange-500 border-orange-500 hover:bg-orange-500 hover:text-white"
-          >
-            {showAdvanced ? "Basic View" : "Advanced View"}
-          </Button>
+          <div className="flex gap-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-orange-500 border-orange-500 hover:bg-orange-500 hover:text-white"
+            >
+              {showAdvanced ? "Basic View" : "Advanced View"}
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleSignOut}
+              className="text-red-500 border-red-500 hover:bg-red-500 hover:text-white"
+            >
+              Sign Out
+            </Button>
+          </div>
         </div>
         
         <div className="grid md:grid-cols-3 gap-8">

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,15 +11,42 @@ export const AddInverterSystem = ({ onSuccess }: { onSuccess: () => void }) => {
   const [location, setLocation] = useState("");
   const [model, setModel] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserId(session.user.id);
+      }
+    };
+    
+    getUserId();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!userId) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to add an inverter system",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
       const { error } = await supabase
         .from('inverter_systems')
-        .insert([{ name, location, model }]);
+        .insert({
+          name,
+          location,
+          model,
+          user_id: userId
+        });
 
       if (error) throw error;
 
@@ -65,7 +92,7 @@ export const AddInverterSystem = ({ onSuccess }: { onSuccess: () => void }) => {
             value={model}
             onChange={(e) => setModel(e.target.value)}
           />
-          <Button type="submit" disabled={isSubmitting} className="w-full">
+          <Button type="submit" disabled={isSubmitting || !userId} className="w-full">
             Add System
           </Button>
         </form>
