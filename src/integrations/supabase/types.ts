@@ -173,29 +173,35 @@ export type Database = {
       }
       inverter_systems: {
         Row: {
+          capacity: number | null
           created_at: string
           id: string
           location: string | null
           model: string | null
           name: string
+          system_id: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          capacity?: number | null
           created_at?: string
           id?: string
           location?: string | null
           model?: string | null
           name: string
+          system_id?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          capacity?: number | null
           created_at?: string
           id?: string
           location?: string | null
           model?: string | null
           name?: string
+          system_id?: string | null
           updated_at?: string
           user_id?: string
         }
