@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LoadControlSwitchProps {
   name: string;
@@ -12,6 +13,7 @@ interface LoadControlSwitchProps {
 
 export const LoadControlSwitch = ({ name, inverterId, onChange }: LoadControlSwitchProps) => {
   const [isOn, setIsOn] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleToggle = (checked: boolean) => {
     setIsOn(checked);
@@ -24,8 +26,11 @@ export const LoadControlSwitch = ({ name, inverterId, onChange }: LoadControlSwi
   };
 
   return (
-    <div className="flex items-center justify-between p-3 bg-black/20 rounded-lg">
-      <Label htmlFor={`load-switch-${inverterId}-${name}`} className="text-white">
+    <div className="flex items-center justify-between p-2 sm:p-3 bg-black/20 rounded-lg">
+      <Label 
+        htmlFor={`load-switch-${inverterId}-${name}`} 
+        className="text-white text-xs sm:text-sm mr-2"
+      >
         {name}
       </Label>
       <Switch

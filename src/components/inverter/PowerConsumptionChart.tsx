@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
   ReferenceLine
 } from "recharts";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Generate demo data for the chart
 const generateHourlyData = (capacity: number) => {
@@ -40,6 +41,7 @@ interface PowerConsumptionChartProps {
 export const PowerConsumptionChart = ({ systemCapacity }: PowerConsumptionChartProps) => {
   const data = generateHourlyData(systemCapacity);
   const maxValue = systemCapacity * 1.1; // 110% of capacity for chart upper bound
+  const isMobile = useIsMobile();
 
   const chartConfig = {
     power: {
@@ -59,26 +61,35 @@ export const PowerConsumptionChart = ({ systemCapacity }: PowerConsumptionChartP
   };
 
   return (
-    <div className="w-full h-80 p-4 bg-black/40 rounded-lg border border-orange-500/20">
-      <h3 className="text-lg font-semibold text-white mb-4">Power Consumption (24h)</h3>
+    <div className="w-full h-64 sm:h-80 p-3 sm:p-4 bg-black/40 rounded-lg border border-orange-500/20">
+      <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-4">Power Consumption (24h)</h3>
       <ChartContainer 
         config={chartConfig} 
-        className="h-64"
+        className="h-48 sm:h-64"
       >
         <AreaChart
           data={data}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          margin={{ 
+            top: 10, 
+            right: isMobile ? 10 : 30, 
+            left: isMobile ? -20 : 0, 
+            bottom: 0 
+          }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#444" />
           <XAxis 
             dataKey="hour" 
             stroke="#999" 
             tickFormatter={(value) => value.split(':')[0]} 
+            tick={{ fontSize: isMobile ? 10 : 12 }}
+            interval={isMobile ? 2 : 1}
           />
           <YAxis 
             stroke="#999" 
             domain={[0, maxValue]} 
             tickFormatter={(value) => `${value}W`} 
+            tick={{ fontSize: isMobile ? 10 : 12 }}
+            width={isMobile ? 40 : 45}
           />
           <ChartTooltip 
             content={
@@ -97,7 +108,7 @@ export const PowerConsumptionChart = ({ systemCapacity }: PowerConsumptionChartP
             y={systemCapacity * 0.85} 
             stroke="#EF4444" 
             strokeDasharray="3 3" 
-            label={{ value: "Surge Threshold", position: "insideBottomRight", fill: "#EF4444" }} 
+            label={isMobile ? null : { value: "Surge", position: "insideBottomRight", fill: "#EF4444", fontSize: 12 }} 
           />
           <Area 
             type="monotone" 
