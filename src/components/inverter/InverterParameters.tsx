@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Battery, Gauge, Power, Zap } from "lucide-react";
+import { Battery, Gauge, Power, Zap, AlertTriangle } from "lucide-react";
 
 interface ParameterProps {
   data: {
@@ -25,60 +25,75 @@ interface ParameterProps {
 }
 
 export const InverterParameters = ({ data }: ParameterProps) => {
+  // Check for power surge (above 85% of capacity)
+  const isPowerSurge = data.output_power && data.output_capacity 
+    ? (data.output_power / data.output_capacity) > 0.85 
+    : false;
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
+      <Card className="bg-black/40 border-orange-500/20">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Battery Status</CardTitle>
+          <CardTitle className="text-sm font-medium text-white">Battery Status</CardTitle>
           <Battery className="h-4 w-4 text-orange-500" />
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <p className="text-2xl font-bold">{data.battery_percentage}%</p>
-            <p className="text-xs text-muted-foreground">Voltage: {data.battery_voltage}V</p>
+            <p className="text-2xl font-bold text-white">{data.battery_percentage}%</p>
+            <p className="text-xs text-gray-300">Voltage: {data.battery_voltage}V</p>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className={`bg-black/40 border-${isPowerSurge ? 'red-500/50' : 'orange-500/20'}`}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Output Parameters</CardTitle>
-          <Power className="h-4 w-4 text-orange-500" />
+          <CardTitle className="text-sm font-medium text-white">Output Parameters</CardTitle>
+          {isPowerSurge ? 
+            <AlertTriangle className="h-4 w-4 text-red-500 animate-pulse" /> : 
+            <Power className="h-4 w-4 text-orange-500" />
+          }
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <p className="text-2xl font-bold">{data.output_power}W</p>
-            <p className="text-xs text-muted-foreground">
+            <div className="flex items-center justify-between">
+              <p className="text-2xl font-bold text-white">{data.output_power}W</p>
+              {isPowerSurge && 
+                <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full">
+                  Power Surge
+                </span>
+              }
+            </div>
+            <p className="text-xs text-gray-300">
               Capacity: {data.output_capacity}VA | Voltage: {data.output_voltage}V
             </p>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-black/40 border-orange-500/20">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Power Quality</CardTitle>
+          <CardTitle className="text-sm font-medium text-white">Power Quality</CardTitle>
           <Zap className="h-4 w-4 text-orange-500" />
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <p className="text-2xl font-bold">{data.power_factor}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-2xl font-bold text-white">{data.power_factor}</p>
+            <p className="text-xs text-gray-300">
               Frequency: {data.frequency}Hz
             </p>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-black/40 border-orange-500/20">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Energy</CardTitle>
+          <CardTitle className="text-sm font-medium text-white">Energy</CardTitle>
           <Gauge className="h-4 w-4 text-orange-500" />
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <p className="text-2xl font-bold">{data.energy_kwh} kWh</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-2xl font-bold text-white">{data.energy_kwh} kWh</p>
+            <p className="text-xs text-gray-300">
               Real Power: {data.real_power}W
             </p>
           </div>
