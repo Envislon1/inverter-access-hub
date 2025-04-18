@@ -1,6 +1,7 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Battery, Gauge, Power, Zap, AlertTriangle } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { useState } from "react";
 
 interface ParameterProps {
   data: {
@@ -22,13 +23,17 @@ interface ParameterProps {
     acc_rms?: number;
     acc_peak_peak?: number;
   };
+  showAdvanced: boolean;
 }
 
-export const InverterParameters = ({ data }: ParameterProps) => {
-  // Check for power surge (above 85% of capacity)
+export const InverterParameters = ({ data, showAdvanced }: ParameterProps) => {
+  const [surgeThreshold, setSurgeThreshold] = useState(85); // Default 85%
   const isPowerSurge = data.output_power && data.output_capacity 
-    ? (data.output_power / data.output_capacity) > 0.85 
+    ? (data.output_power / data.output_capacity) > (surgeThreshold / 100)
     : false;
+
+  // Check for power surge (above 85% of capacity)
+  
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -85,20 +90,22 @@ export const InverterParameters = ({ data }: ParameterProps) => {
         </CardContent>
       </Card>
 
-      <Card className="bg-black/40 border-orange-500/20">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-white">Energy</CardTitle>
-          <Gauge className="h-4 w-4 text-orange-500" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <p className="text-2xl font-bold text-white">{data.energy_kwh} kWh</p>
-            <p className="text-xs text-gray-300">
-              Real Power: {data.real_power}W
-            </p>
+      {showAdvanced && (
+        <div className="md:col-span-2 lg:col-span-4 p-4 bg-black/40 border border-orange-500/20 rounded-lg">
+          <h3 className="text-lg font-semibold text-white mb-4">Surge Threshold Configuration</h3>
+          <div className="flex items-center gap-4">
+            <Slider
+              value={[surgeThreshold]}
+              onValueChange={(values) => setSurgeThreshold(values[0])}
+              max={100}
+              min={50}
+              step={1}
+              className="flex-1"
+            />
+            <span className="text-white min-w-[4rem]">{surgeThreshold}%</span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </div>
   );
 };

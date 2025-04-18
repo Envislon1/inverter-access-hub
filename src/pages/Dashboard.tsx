@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +7,7 @@ import { PowerSwitch } from "@/components/inverter/PowerSwitch";
 import { PowerConsumptionChart } from "@/components/inverter/PowerConsumptionChart";
 import { DeleteInverterSystem } from "@/components/inverter/DeleteInverterSystem";
 import { Button } from "@/components/ui/button";
+import { LoadControlPanel } from "@/components/inverter/LoadControlPanel";
 
 interface InverterSystem {
   id: string;
@@ -61,9 +61,7 @@ const Dashboard = () => {
     }
   };
 
-  // Generate different parameters for each system
   const getSystemParameters = (systemId: string) => {
-    // Use the system ID as a seed for pseudo-random values
     const seed = systemId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const random = (min: number, max: number) => {
       const x = Math.sin(seed + systems.findIndex(s => s.id === systemId)) * 10000;
@@ -78,11 +76,11 @@ const Dashboard = () => {
       battery_voltage: parseFloat(random(22.1, 28.7).toFixed(1)),
       output_capacity: capacity,
       output_voltage: parseFloat(random(219, 241).toFixed(1)),
-      output_power: Math.round(random(capacity * 0.3, capacity * 0.95)), // Random usage between 30-95%
+      output_power: Math.round(random(capacity * 0.3, capacity * 0.95)),
       frequency: parseFloat(random(49.5, 50.5).toFixed(1)),
       power_factor: parseFloat(random(0.8, 0.99).toFixed(2)),
-      mains_present: random(0, 10) > 3, // 70% chance of mains being present
-      solar_present: random(0, 10) > 5, // 50% chance of solar being present
+      mains_present: random(0, 10) > 3,
+      solar_present: random(0, 10) > 5,
       energy_kwh: parseFloat(random(5, 30).toFixed(1)),
       apparent_power: Math.round(random(1800, 2600)),
       reactive_power: Math.round(random(200, 700)),
@@ -99,7 +97,6 @@ const Dashboard = () => {
     navigate("/");
   };
 
-  // Get parameters for the selected system
   const parameters = selectedSystem ? getSystemParameters(selectedSystem) : null;
   const selectedSystemData = systems.find(system => system.id === selectedSystem);
 
@@ -158,7 +155,11 @@ const Dashboard = () => {
                       inverterId={selectedSystem} 
                       initialState={true}
                     />
-                    <InverterParameters data={parameters} />
+                    <div className="mt-4">
+                      <h3 className="text-lg font-semibold text-white mb-2">Load Control</h3>
+                      <LoadControlPanel inverterId={selectedSystem} />
+                    </div>
+                    <InverterParameters data={parameters} showAdvanced={showAdvanced} />
                     
                     {showAdvanced && (
                       <div className="space-y-8 mt-8">
