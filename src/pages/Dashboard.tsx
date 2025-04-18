@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +16,10 @@ interface InverterSystem {
   location: string;
   model: string;
   system_id?: string;
-  capacity: number;
+  capacity?: number;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
 }
 
 const Dashboard = () => {
